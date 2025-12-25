@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Кутбер Мурабаха</title>
+
+<style>
+body { font-family: Arial, sans-serif; background:#f4f6f8; padding:20px; }
+.container { max-width:420px; background:#fff; padding:20px; border-radius:12px; margin:auto; }
+h3 { text-align:center; margin-bottom:10px; }
+input, select, button {
+  width:100%; padding:12px; margin:8px 0;
+  border-radius:8px; border:1px solid #ccc; font-size:16px;
+}
+button { background:#007aff; color:#fff; border:none; }
+.summary { margin-top:12px; font-weight:bold; }
+.note { font-size:13px; color:#555; margin-top:6px; }
+table { width:100%; border-collapse:collapse; margin-top:12px; }
+th, td { border:1px solid #ddd; padding:6px; text-align:center; }
+th { background:#f0f0f0; }
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h3>Мурабаха</h3>
+
+  <input id="price" inputmode="numeric" placeholder="Товар баасы">
+
+  <select id="months">
+    <option value="">Мөөнөт (ай)</option>
+    <option value="1">1 ай — 2,42%</option>
+    <option value="2">2 ай — 4,83%</option>
+    <option value="3">3 ай — 7,25%</option>
+    <option value="4">4 ай — 9,67%</option>
+    <option value="5">5 ай — 12,08%</option>
+    <option value="6">6 ай — 14,5%</option>
+    <option value="7">7 ай — 16,92%</option>
+    <option value="8">8 ай — 19,33%</option>
+    <option value="9">9 ай — 21,75%</option>
+    <option value="10">10 ай — 23,33%</option>
+    <option value="11">11 ай — 25,67%</option>
+    <option value="12">12 ай — 28%</option>
+  </select>
+
+  <button id="calcBtn" type="button">Эсептөө</button>
+
+  <div id="result"></div>
+</div>
+
+<script>
+// Наценки по срокам
+const markupByMonths = {
+  1: 2.42, 2: 4.83, 3: 7.25, 4: 9.67,
+  5: 12.08, 6: 14.5, 7: 16.92, 8: 19.33,
+  9: 21.75, 10: 23.33, 11: 25.67, 12: 28
+};
+
+// Названия месяцев
+const monthNames = [
+  "Январь","Февраль","Март","Апрель","Май","Июнь",
+  "Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"
+];
+
+document.getElementById("calcBtn").addEventListener("click", function () {
+  const price = parseFloat((document.getElementById("price").value || "").replace(',', '.'));
+  const months = parseInt(document.getElementById("months").value);
+
+  if (isNaN(price) || isNaN(months)) {
+    alert("Введите цену и выберите срок");
+    return;
+  }
+
+  const markupPercent = markupByMonths[months];
+  const markupSum = price * markupPercent / 100;
+  const total = price + markupSum;
+  const monthlyPay = total / months;
+
+  // Следующий календарный месяц
+  const today = new Date();
+  let mIndex = today.getMonth() + 1; // следующий месяц
+  let year = today.getFullYear();
+
+  let html = `
+    <div class="summary">
+      Товар баасы: ${price.toFixed(0)}<br>
+      Үстөк сумма: ${markupSum.toFixed(0)}<br>
+      Жалпы сумма: ${total.toFixed(0)}<br>
+      Айына төлөм: ${monthlyPay.toFixed(0)}
+      <div class="note">Биринчи төлөм — кийинки айдан баштап</div>
+    </div>
+
+    <table>
+      <tr><th>Мөөнөтү</th><th>Төлөм</th></tr>
+  `;
+
+ for (let i = 0; i < months; i++) {
+  const idx = (mIndex + i) % 12;
+  html += `
+    <tr>
+      <td>${i + 1}. ${monthNames[idx]}</td>
+      <td>${monthlyPay.toFixed(0)}</td>
+    </tr>
+  `;
+}
+
+
+  html += `</table>`;
+  document.getElementById("result").innerHTML = html;
+});
+</script>
+</body>
+</html>
