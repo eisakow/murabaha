@@ -162,50 +162,22 @@ if (!newWindow) {
 }
 
 newWindow.document.write(`
+newWindow.document.write(`
+
 <!DOCTYPE html>
+
 <html lang="ru">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>График Мурабаха</title>
-.actions {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
 
-.actions button {
-    flex: 1;
-    padding: 12px;
-    border: 0;
-    border-radius: 8px;
-    background: #007aff;
-    color: white;
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.actions button:first-child {
-    background: #555;
-}
-
-@media print {
-    .actions {
-        display: none;
-    }
-
-    body {
-        background: white;
-        padding: 0;
-    }
-
-    .container {
-        box-shadow: none;
-        max-width: none;
-    }
-}
 <style>
+
 body {
     font-family: Arial, sans-serif;
     background: #f4f6f8;
@@ -224,6 +196,31 @@ body {
 
 h2 {
     text-align: center;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.actions button {
+    flex: 1;
+    padding: 12px;
+    border: 0;
+    border-radius: 8px;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.back-button {
+    background: #555;
+}
+
+.pdf-button {
+    background: #007aff;
 }
 
 .summary {
@@ -254,7 +251,27 @@ th, td {
 th {
     background: #eee;
 }
+
+@media print {
+
+    .actions {
+        display: none;
+    }
+
+    body {
+        background: white;
+        padding: 0;
+    }
+
+    .container {
+        box-shadow: none;
+        max-width: none;
+    }
+
+}
+
 </style>
+
 </head>
 
 <body>
@@ -262,15 +279,17 @@ th {
 <div class="container">
 
 <h2>График погашения Мурабаха</h2>
-<div class="container">
-<h2>График погашения Мурабаха</h2>
 
 <div class="actions">
-<button onclick="window.history.back()">← Назад в калькулятор</button>
-<button onclick="window.print()">📄 Сохранить PDF</button>
-</div>
 
-${html}
+<button class="back-button" onclick="window.close()">
+← Назад в калькулятор
+</button>
+
+<button class="pdf-button" onclick="window.print()">
+📄 Сохранить PDF
+</button>
+
 </div>
 
 ${html}
@@ -278,9 +297,12 @@ ${html}
 </div>
 
 </body>
+
 </html>
+
 `);
 
+newWindow.document.close();
 newWindow.document.close();
 }
 </script>
