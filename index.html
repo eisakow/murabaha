@@ -152,7 +152,90 @@ function calculate(){
   }
 
   html += '</table></div>';
-  document.getElementById('result').innerHTML = html;
+  html += '</table></div>';
+
+var newWindow = window.open('', '_blank');
+
+if (!newWindow) {
+    alert('Разрешите открытие новых окон в браузере');
+    return;
+}
+
+newWindow.document.write(`
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>График Мурабаха</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    padding: 20px;
+    margin: 0;
+}
+
+.container {
+    max-width: 700px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+}
+
+h2 {
+    text-align: center;
+}
+
+.summary {
+    background: #f4f6f8;
+    padding: 14px;
+    border-radius: 10px;
+    margin-top: 18px;
+    line-height: 1.8;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+th {
+    background: #eee;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>График погашения Мурабаха</h2>
+
+${html}
+
+</div>
+
+</body>
+</html>
+`);
+
+newWindow.document.close();
 }
 </script>
 </body>
