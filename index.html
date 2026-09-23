@@ -3,190 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Мурабаха</title>
-<style>
-body{font-family:Arial,sans-serif;background:#f4f6f8;padding:15px;margin:0}
-.container{max-width:520px;margin:auto;background:white;padding:20px;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
-h2{text-align:center}
-label{display:block;font-weight:bold;margin-top:12px}
-input,select,button{width:100%;box-sizing:border-box;padding:13px;margin-top:6px;border:1px solid #ccc;border-radius:8px;font-size:16px}
-button{background:#007aff;color:white;border:0;font-weight:bold;margin-top:18px}
-.summary{background:#f4f6f8;padding:14px;border-radius:10px;margin-top:18px;line-height:1.8}
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;margin-top:15px;font-size:14px}
-th,td{border:1px solid #ddd;padding:8px;text-align:center}
-th{background:#eee}
-</style>
-</head>
-<body>
-<div class="container">
-<h2>Калькулятор Мурабаха</h2>
 
-<label>ФИО клиента</label>
-<input id="clientName" type="text" placeholder="Введите ФИО">
-
-<label>Цена товара (сом)</label>
-<input id="price" type="number" min="1" step="1" placeholder="100000">
-
-<label>Срок</label>
-<select id="months">
-<option value="">Выберите срок</option>
-<option value="1">1 месяц — 2,50%</option>
-<option value="2">2 месяца — 5,00%</option>
-<option value="3">3 месяца — 7,50%</option>
-<option value="4">4 месяца — 10,00%</option>
-<option value="5">5 месяцев — 12,50%</option>
-<option value="6">6 месяцев — 15,00%</option>
-<option value="7">7 месяцев — 17,50%</option>
-<option value="8">8 месяцев — 20,00%</option>
-<option value="9">9 месяцев — 22,50%</option>
-<option value="10">10 месяцев — 25,00%</option>
-<option value="11">11 месяцев — 27,50%</option>
-<option value="12">12 месяцев — 30,00%</option>
-</select>
-
-<label>Число ежемесячного погашения</label>
-<select id="payDay">
-<option value="">Выберите число</option>
-<option value="1">1 число</option><option value="2">2 число</option>
-<option value="3">3 число</option><option value="4">4 число</option>
-<option value="5">5 число</option><option value="6">6 число</option>
-<option value="7">7 число</option><option value="8">8 число</option>
-<option value="9">9 число</option><option value="10">10 число</option>
-<option value="11">11 число</option><option value="12">12 число</option>
-<option value="13">13 число</option><option value="14">14 число</option>
-<option value="15">15 число</option><option value="16">16 число</option>
-<option value="17">17 число</option><option value="18">18 число</option>
-<option value="19">19 число</option><option value="20">20 число</option>
-<option value="21">21 число</option><option value="22">22 число</option>
-<option value="23">23 число</option><option value="24">24 число</option>
-<option value="25">25 число</option><option value="26">26 число</option>
-<option value="27">27 число</option><option value="28">28 число</option>
-<option value="29">29 число</option><option value="30">30 число</option>
-<option value="31">31 число</option>
-</select>
-
-<button type="button" onclick="calculate()">Рассчитать</button>
-
-<div id="result"></div>
-</div>
-
-<script>
-function money(n){
-  return Math.round(n).toLocaleString('ru-RU') + ' сом';
-}
-
-function escapeHtml(text){
-  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-function paymentDate(year, month, wantedDay){
-  var lastDay = new Date(year, month + 1, 0).getDate();
-  var day = Math.min(wantedDay, lastDay);
-  return new Date(year, month, day);
-}
-
-function dateText(date){
-  return String(date.getDate()).padStart(2,'0') + '.' +
-         String(date.getMonth()+1).padStart(2,'0') + '.' +
-         date.getFullYear();
-}
-
-function calculate(){
-  var name = document.getElementById('clientName').value.trim();
-  var price = Number(document.getElementById('price').value);
-  var months = Number(document.getElementById('months').value);
-  var payDay = Number(document.getElementById('payDay').value);
-
-  if(!name){
-    alert('Введите ФИО клиента');
-    return;
-  }
-  if(!price || price <= 0){
-    alert('Введите цену товара');
-    return;
-  }
-  if(!months){
-    alert('Выберите срок');
-    return;
-  }
-  if(!payDay){
-    alert('Выберите число погашения');
-    return;
-  }
-
-  var markupPercent = 30 * months / 12;
-  var markup = price * markupPercent / 100;
-  var total = Math.round(price + markup);
-  var monthly = Math.floor(total / months);
-  var lastPayment = total - monthly * (months - 1);
-
-  var today = new Date();
-  var firstMonth = today.getMonth() + 1;
-  var firstYear = today.getFullYear();
-
-  var html = '<div class="summary">' +
-    '<b>Клиент:</b> ' + escapeHtml(name) + '<br>' +
-    '<b>Цена:</b> ' + money(price) + '<br>' +
-    '<b>Наценка:</b> ' + markupPercent.toFixed(2) + '% (' + money(markup) + ')<br>' +
-    '<b>Общая сумма:</b> ' + money(total) + '<br>' +
-    '<b>Ежемесячный платёж:</b> ' + money(monthly) +
-    '</div>';
-
-  html += '<div class="table-wrap"><table>' +
-    '<tr><th>№</th><th>Дата</th><th>Платёж</th><th>Остаток</th></tr>';
-
-  var remaining = total;
-
-  for(var i=0;i<months;i++){
-    var d = paymentDate(firstYear, firstMonth + i, payDay);
-    var payment = (i === months - 1) ? lastPayment : monthly;
-    remaining -= payment;
-
-    html += '<tr>' +
-      '<td>' + (i+1) + '</td>' +
-      '<td>' + dateText(d) + '</td>' +
-      '<td>' + money(payment) + '</td>' +
-      '<td>' + money(Math.max(0,remaining)) + '</td>' +
-      '</tr>';
-  }
-
-  html += '</table></div>';
-  html += '</table></div>';
-
-var newWindow = window.open('', '_blank');
-
-if (!newWindow) {
-    alert('Разрешите открытие новых окон в браузере');
-    return;
-}
-
-newWindow.document.write(`
-newWindow.document.write(`
-
-<!DOCTYPE html>
-
-<html lang="ru">
-
-<head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>График Мурабаха</title>
+<title>Калькулятор Мурабаха</title>
 
 <style>
+* {
+    box-sizing: border-box;
+}
 
 body {
     font-family: Arial, sans-serif;
     background: #f4f6f8;
-    padding: 20px;
+    padding: 15px;
     margin: 0;
 }
 
 .container {
-    max-width: 700px;
+    max-width: 520px;
     margin: auto;
     background: white;
     padding: 20px;
@@ -196,76 +29,627 @@ body {
 
 h2 {
     text-align: center;
+    margin-top: 0;
 }
 
-.actions {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.actions button {
-    flex: 1;
-    padding: 12px;
-    border: 0;
-    border-radius: 8px;
-    color: white;
-    font-size: 15px;
+label {
+    display: block;
     font-weight: bold;
+    margin-top: 14px;
+}
+
+input,
+select,
+button {
+    width: 100%;
+    padding: 13px;
+    margin-top: 6px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+button {
+    background: #007aff;
+    color: white;
+    border: 0;
+    font-weight: bold;
+    margin-top: 20px;
     cursor: pointer;
 }
 
+button:active {
+    opacity: .8;
+}
+
+.info {
+    margin-top: 15px;
+    padding: 12px;
+    background: #f4f6f8;
+    border-radius: 8px;
+    font-size: 14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Калькулятор Мурабаха</h2>
+
+<label>ФИО клиента</label>
+<input
+    id="clientName"
+    type="text"
+    placeholder="Введите ФИО клиента"
+>
+
+<label>Цена товара (сом)</label>
+<input
+    id="price"
+    type="number"
+    min="1"
+    step="1"
+    placeholder="100000"
+>
+
+<label>Срок</label>
+
+<select id="months">
+
+    <option value="">Выберите срок</option>
+
+    <option value="1">1 месяц — 2,50%</option>
+    <option value="2">2 месяца — 5,00%</option>
+    <option value="3">3 месяца — 7,50%</option>
+    <option value="4">4 месяца — 10,00%</option>
+    <option value="5">5 месяцев — 12,50%</option>
+    <option value="6">6 месяцев — 15,00%</option>
+    <option value="7">7 месяцев — 17,50%</option>
+    <option value="8">8 месяцев — 20,00%</option>
+    <option value="9">9 месяцев — 22,50%</option>
+    <option value="10">10 месяцев — 25,00%</option>
+    <option value="11">11 месяцев — 27,50%</option>
+    <option value="12">12 месяцев — 30,00%</option>
+
+</select>
+
+<label>Число ежемесячного погашения</label>
+
+<select id="payDay">
+
+    <option value="">Выберите число</option>
+
+</select>
+
+<div class="info">
+    <b>Годовая наценка:</b> 30%
+</div>
+
+<button type="button" onclick="calculate()">
+    Рассчитать
+</button>
+
+</div>
+
+
+<script>
+
+/* Создаём числа от 1 до 31 */
+
+const payDaySelect = document.getElementById("payDay");
+
+for (let i = 1; i <= 31; i++) {
+
+    const option = document.createElement("option");
+
+    option.value = i;
+    option.textContent = i + " число";
+
+    payDaySelect.appendChild(option);
+}
+
+
+/* Формат денег */
+
+function money(number) {
+
+    return Math.round(number)
+        .toLocaleString("ru-RU") + " сом";
+
+}
+
+
+/* Защита текста */
+
+function escapeHtml(text) {
+
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* Дата платежа */
+
+function paymentDate(year, month, wantedDay) {
+
+    const lastDay = new Date(
+        year,
+        month + 1,
+        0
+    ).getDate();
+
+    const day = Math.min(
+        wantedDay,
+        lastDay
+    );
+
+    return new Date(
+        year,
+        month,
+        day
+    );
+
+}
+
+
+/* Формат даты */
+
+function dateText(date) {
+
+    return String(date.getDate()).padStart(2, "0")
+        + "."
+        + String(date.getMonth() + 1).padStart(2, "0")
+        + "."
+        + date.getFullYear();
+
+}
+
+
+/* Основной расчёт */
+
+function calculate() {
+
+    const name =
+        document.getElementById("clientName")
+        .value
+        .trim();
+
+    const price =
+        Number(
+            document.getElementById("price").value
+        );
+
+    const months =
+        Number(
+            document.getElementById("months").value
+        );
+
+    const payDay =
+        Number(
+            document.getElementById("payDay").value
+        );
+
+
+    /* Проверки */
+
+    if (!name) {
+
+        alert("Введите ФИО клиента");
+
+        return;
+    }
+
+
+    if (!price || price <= 0) {
+
+        alert("Введите цену товара");
+
+        return;
+    }
+
+
+    if (!months) {
+
+        alert("Выберите срок");
+
+        return;
+    }
+
+
+    if (!payDay) {
+
+        alert("Выберите число погашения");
+
+        return;
+    }
+
+
+    /* Наценка 30% годовых */
+
+    const markupPercent =
+        30 * months / 12;
+
+
+    const markup =
+        price * markupPercent / 100;
+
+
+    const total =
+        Math.round(price + markup);
+
+
+    /* Ежемесячный платёж */
+
+    const monthly =
+        Math.floor(total / months);
+
+
+    /* Последний платёж */
+
+    const lastPayment =
+        total - monthly * (months - 1);
+
+
+    /*
+       Первый платёж —
+       следующий месяц после покупки
+    */
+
+    const today = new Date();
+
+    const firstMonth =
+        today.getMonth() + 1;
+
+    const firstYear =
+        today.getFullYear();
+
+
+    /* Формируем сводку */
+
+    let html = `
+
+        <div class="summary">
+
+            <b>Клиент:</b>
+            ${escapeHtml(name)}
+            <br>
+
+            <b>Цена товара:</b>
+            ${money(price)}
+            <br>
+
+            <b>Срок:</b>
+            ${months} мес.
+            <br>
+
+            <b>Наценка:</b>
+            ${markupPercent.toFixed(2)}%
+            (${money(markup)})
+            <br>
+
+            <b>Общая сумма:</b>
+            ${money(total)}
+            <br>
+
+            <b>Ежемесячный платёж:</b>
+            ${money(monthly)}
+            <br>
+
+            <b>Число погашения:</b>
+            ${payDay}
+
+        </div>
+
+    `;
+
+
+    /* Таблица */
+
+    html += `
+
+        <div class="table-wrap">
+
+        <table>
+
+            <tr>
+                <th>№</th>
+                <th>Дата</th>
+                <th>Платёж</th>
+                <th>Остаток</th>
+            </tr>
+
+    `;
+
+
+    let remaining = total;
+
+
+    for (
+        let i = 0;
+        i < months;
+        i++
+    ) {
+
+        const d =
+            paymentDate(
+                firstYear,
+                firstMonth + i,
+                payDay
+            );
+
+
+        const payment =
+            i === months - 1
+                ? lastPayment
+                : monthly;
+
+
+        remaining -= payment;
+
+
+        html += `
+
+            <tr>
+
+                <td>
+                    ${i + 1}
+                </td>
+
+                <td>
+                    ${dateText(d)}
+                </td>
+
+                <td>
+                    ${money(payment)}
+                </td>
+
+                <td>
+                    ${money(Math.max(0, remaining))}
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+
+    html += `
+
+        </table>
+
+        </div>
+
+    `;
+
+
+    /*
+       Открываем график
+       в новом окне
+    */
+
+    const newWindow =
+        window.open("", "_blank");
+
+
+    if (!newWindow) {
+
+        alert(
+            "Браузер заблокировал новое окно. Разрешите всплывающие окна для этого сайта."
+        );
+
+        return;
+    }
+
+
+    /*
+       HTML нового окна
+    */
+
+    newWindow.document.write(`
+
+<!DOCTYPE html>
+
+<html lang="ru">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>График Мурабаха</title>
+
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+
+    font-family: Arial, sans-serif;
+
+    background: #f4f6f8;
+
+    padding: 20px;
+
+    margin: 0;
+
+}
+
+.container {
+
+    max-width: 750px;
+
+    margin: auto;
+
+    background: white;
+
+    padding: 20px;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 2px 12px
+        rgba(0,0,0,.08);
+
+}
+
+h2 {
+
+    text-align: center;
+
+}
+
+.actions {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-bottom: 20px;
+
+}
+
+.actions button {
+
+    flex: 1;
+
+    padding: 12px;
+
+    border: 0;
+
+    border-radius: 8px;
+
+    color: white;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+}
+
 .back-button {
+
     background: #555;
+
 }
 
 .pdf-button {
+
     background: #007aff;
+
 }
 
 .summary {
+
     background: #f4f6f8;
+
     padding: 14px;
+
     border-radius: 10px;
-    margin-top: 18px;
+
     line-height: 1.8;
+
 }
 
 .table-wrap {
+
     overflow-x: auto;
+
 }
 
 table {
+
     width: 100%;
+
     border-collapse: collapse;
+
     margin-top: 15px;
+
     font-size: 14px;
+
 }
 
-th, td {
+th,
+td {
+
     border: 1px solid #ddd;
+
     padding: 8px;
+
     text-align: center;
+
 }
 
 th {
+
     background: #eee;
+
 }
+
+
+@media(max-width:600px) {
+
+    body {
+
+        padding: 10px;
+
+    }
+
+    .container {
+
+        padding: 12px;
+
+    }
+
+    .actions {
+
+        flex-direction: column;
+
+    }
+
+}
+
+
+/* Для печати / PDF */
 
 @media print {
 
     .actions {
+
         display: none;
+
     }
 
     body {
+
         background: white;
+
         padding: 0;
+
     }
 
     .container {
+
         box-shadow: none;
+
         max-width: none;
+
     }
 
 }
@@ -274,27 +658,42 @@ th {
 
 </head>
 
+
 <body>
+
 
 <div class="container">
 
-<h2>График погашения Мурабаха</h2>
+<h2>
+График погашения Мурабаха
+</h2>
+
 
 <div class="actions">
 
-<button class="back-button" onclick="window.close()">
-← Назад в калькулятор
+<button
+    class="back-button"
+    onclick="window.close()"
+>
+    ← Назад в калькулятор
 </button>
 
-<button class="pdf-button" onclick="window.print()">
-📄 Сохранить PDF
+
+<button
+    class="pdf-button"
+    onclick="window.print()"
+>
+    📄 Сохранить PDF
 </button>
 
 </div>
+
 
 ${html}
 
+
 </div>
+
 
 </body>
 
@@ -302,9 +701,12 @@ ${html}
 
 `);
 
-newWindow.document.close();
-newWindow.document.close();
+
+    newWindow.document.close();
+
 }
+
 </script>
+
 </body>
 </html>
