@@ -6,495 +6,627 @@
 <title>Калькулятор Мурабаха</title>
 
 <style>
-*{box-sizing:border-box}
-
-body{
-    font-family:Arial,sans-serif;
-    background:#f4f6f8;
-    padding:15px;
-    margin:0;
+* {
+    box-sizing: border-box;
 }
 
-.container{
-    max-width:520px;
-    margin:auto;
-    background:white;
-    padding:20px;
-    border-radius:14px;
-    box-shadow:0 2px 12px rgba(0,0,0,.08);
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background: #f3f4f6;
+    color: #111;
 }
 
-h2{text-align:center;margin-top:0}
-
-label{
-    display:block;
-    font-weight:bold;
-    margin-top:14px;
+.container {
+    max-width: 900px;
+    margin: auto;
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
 }
 
-input,select,button{
-    width:100%;
-    padding:13px;
-    margin-top:6px;
-    border:1px solid #ccc;
-    border-radius:8px;
-    font-size:16px;
+h1 {
+    text-align: center;
+    margin-bottom: 25px;
 }
 
-button{
-    background:#007aff;
-    color:white;
-    border:0;
-    font-weight:bold;
-    margin-top:20px;
-    cursor:pointer;
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
 }
 
-.info{
-    margin-top:15px;
-    padding:12px;
-    background:#f4f6f8;
-    border-radius:8px;
-    font-size:14px;
+.field {
+    display: flex;
+    flex-direction: column;
+}
+
+.field label {
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.field input,
+.field select {
+    padding: 11px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+button {
+    border: none;
+    border-radius: 8px;
+    padding: 13px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.calculate {
+    width: 100%;
+    margin-top: 20px;
+    background: #111827;
+    color: white;
+}
+
+.pdf {
+    background: #2563eb;
+    color: white;
+    margin-top: 15px;
+    width: 100%;
+}
+
+/* PDF */
+.pdf-page {
+    display: none;
+}
+
+.summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    background: #f5f6f7;
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+
+.info {
+    line-height: 1.9;
+    font-size: 17px;
+}
+
+.result {
+    background: #eef1f4;
+    padding: 20px;
+    border-radius: 15px;
+    line-height: 2;
+    font-size: 17px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+th {
+    background: #f0f0f0;
+}
+
+.error {
+    color: red;
+    margin-top: 10px;
+}
+
+/* Печать / PDF */
+@media print {
+
+    @page {
+        size: A4;
+        margin: 12mm;
+    }
+
+    body {
+        background: white;
+        padding: 0;
+    }
+
+    .calculator {
+        display: none !important;
+    }
+
+    .pdf-page {
+        display: block !important;
+    }
+
+    .pdf-page h1 {
+        font-size: 25px;
+        margin: 0 0 20px;
+    }
+
+    .summary {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 20px;
+        background: #f5f6f7 !important;
+        padding: 18px;
+        border-radius: 12px;
+    }
+
+    .info,
+    .result {
+        font-size: 14px;
+    }
+
+    table {
+        font-size: 13px;
+    }
+
+    th,
+    td {
+        padding: 7px;
+    }
+
+    button {
+        display: none !important;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="container calculator">
 
-<h2>Калькулятор Мурабаха</h2>
+    <h1>Калькулятор Мурабаха</h1>
 
-<label>ФИО клиента</label>
-<input id="clientName" type="text" placeholder="Введите ФИО клиента">
+    <div class="form-grid">
 
-<label>Наименование товара</label>
-<input id="productName" type="text" placeholder="Например: Ноутбук HP">
+        <div class="field">
+            <label>Имя и фамилия клиента</label>
+            <input type="text" id="client" placeholder="Например: Erzat Isakov">
+        </div>
 
-<label>Цена товара (сом)</label>
-<input id="price" type="number" min="1" placeholder="100000">
+        <div class="field">
+            <label>Наименование товара</label>
+            <input type="text" id="product" placeholder="Например: iPhone 17 Pro Max">
+        </div>
 
-<label>Первоначальный взнос (сом)</label>
-<input id="downPayment" type="number" min="0" value="0" placeholder="0">
+        <div class="field">
+            <label>Цена товара, сом</label>
+            <input type="number" id="price" placeholder="120000">
+        </div>
 
-<label>Срок</label>
-<select id="months">
-<option value="">Выберите срок</option>
-<option value="1">1 месяц — 2.50%</option>
-<option value="2">2 месяца — 5.00%</option>
-<option value="3">3 месяца — 7.50%</option>
-<option value="4">4 месяца — 10.00%</option>
-<option value="5">5 месяцев — 12.50%</option>
-<option value="6">6 месяцев — 15.00%</option>
-<option value="7">7 месяцев — 17.50%</option>
-<option value="8">8 месяцев — 20.00%</option>
-<option value="9">9 месяцев — 22.50%</option>
-<option value="10">10 месяцев — 25.00%</option>
-<option value="11">11 месяцев — 27.50%</option>
-<option value="12">12 месяцев — 30.00%</option>
-</select>
+        <div class="field">
+            <label>Первоначальный взнос, сом</label>
+            <input type="number" id="downPayment" value="0">
+        </div>
 
-<label>Число ежемесячного погашения</label>
-<select id="payDay">
-<option value="">Выберите число</option>
-</select>
+        <div class="field">
+            <label>Годовая наценка, %</label>
+            <input type="number" id="markup" value="30">
+        </div>
 
-<div class="info">
-<b>Годовая наценка:</b> 30%
+        <div class="field">
+            <label>Срок, месяцев</label>
+            <select id="months">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12" selected>12</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label>Дата первой оплаты</label>
+            <input type="date" id="firstDate">
+        </div>
+
+    </div>
+
+    <button class="calculate" onclick="calculate()">
+        Рассчитать
+    </button>
+
+    <div id="error" class="error"></div>
+
 </div>
 
-<button type="button" onclick="calculate()">Рассчитать</button>
 
-</div>
+<!-- PDF СТРАНИЦА -->
 
-<script>
+<div class="pdf-page">
 
-const payDaySelect=document.getElementById("payDay");
-
-for(let i=1;i<=31;i++){
-    const option=document.createElement("option");
-    option.value=i;
-    option.textContent=i+" число";
-    payDaySelect.appendChild(option);
-}
-
-function money(number){
-    return Math.round(number).toLocaleString("ru-RU")+" сом";
-}
-
-function escapeHtml(text){
-    return String(text)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-}
-
-function paymentDate(year,month,wantedDay){
-    const lastDay=new Date(year,month+1,0).getDate();
-    const day=Math.min(wantedDay,lastDay);
-    return new Date(year,month,day);
-}
-
-function dateText(date){
-    return String(date.getDate()).padStart(2,"0")+"."+
-           String(date.getMonth()+1).padStart(2,"0")+"."+
-           date.getFullYear();
-}
-
-function calculate(){
-
-    const name=document.getElementById("clientName").value.trim();
-    const productName=document.getElementById("productName").value.trim();
-    const price=Number(document.getElementById("price").value);
-    const downPayment=Number(document.getElementById("downPayment").value)||0;
-    const months=Number(document.getElementById("months").value);
-    const payDay=Number(document.getElementById("payDay").value);
-
-    if(!name){
-        alert("Введите ФИО клиента");
-        return;
-    }
-
-    if(!productName){
-        alert("Введите наименование товара");
-        return;
-    }
-
-    if(!price || price<=0){
-        alert("Введите цену товара");
-        return;
-    }
-
-    if(downPayment<0){
-        alert("Первоначальный взнос не может быть отрицательным");
-        return;
-    }
-
-    if(downPayment>=price){
-        alert("Первоначальный взнос должен быть меньше цены товара");
-        return;
-    }
-
-    if(!months){
-        alert("Выберите срок");
-        return;
-    }
-
-    if(!payDay){
-        alert("Выберите число погашения");
-        return;
-    }
-
-    /* Цена минус первоначальный взнос */
-    const financedAmount=price-downPayment;
-
-    /* Наценка 30% годовых */
-    const markupPercent=30*months/12;
-
-    /* Наценка считается только от остатка */
-    const markup=financedAmount*markupPercent/100;
-
-    /* Сумма рассрочки */
-    const installmentTotal=Math.round(financedAmount+markup);
-
-    /* Общая сумма вместе с первоначальным взносом */
-    const contractTotal=Math.round(downPayment+installmentTotal);
-
-    /* Ежемесячный платёж */
-    const monthly=Math.floor(installmentTotal/months);
-
-    /* Последний платёж */
-    const lastPayment=
-        installmentTotal-monthly*(months-1);
-
-    const today=new Date();
-
-    const firstMonth=today.getMonth()+1;
-    const firstYear=today.getFullYear();
-
-    let html=`
+    <h1>График погашения Мурабаха</h1>
 
     <div class="summary">
 
-        <b>Клиент:</b>
-        ${escapeHtml(name)}
-        <br>
+        <!-- ЛЕВАЯ ЧАСТЬ -->
 
-        <b>Товар:</b>
-        ${escapeHtml(productName)}
-        <br>
+        <div class="info">
 
-        <b>Цена товара:</b>
-        ${money(price)}
-        <br>
+            <div>
+                <b>Клиент:</b>
+                <span id="pdfClient"></span>
+            </div>
 
-        <b>Первоначальный взнос:</b>
-        ${money(downPayment)}
-        <br>
+            <div>
+                <b>Товар:</b>
+                <span id="pdfProduct"></span>
+            </div>
 
-        <b>Сумма после взноса:</b>
-        ${money(financedAmount)}
-        <br>
+            <div>
+                <b>Цена товара:</b>
+                <span id="pdfPrice"></span>
+            </div>
 
-        <b>Срок:</b>
-        ${months} мес.
-        <br>
+            <div>
+                <b>Первоначальный взнос:</b>
+                <span id="pdfDown"></span>
+            </div>
 
-        <b>Наценка:</b>
-        ${markupPercent.toFixed(2)}%
-        (${money(markup)})
-        <br>
+            <div>
+                <b>Сумма после взноса:</b>
+                <span id="pdfAfterDown"></span>
+            </div>
 
-        <b>Сумма рассрочки:</b>
-        ${money(installmentTotal)}
-        <br>
+            <div>
+                <b>Срок:</b>
+                <span id="pdfMonths"></span>
+            </div>
 
-        <b>Общая сумма:</b>
-        ${money(contractTotal)}
-        <br>
+        </div>
 
-        <b>Ежемесячный платёж:</b>
-        ${money(monthly)}
-        <br>
 
-        <b>Число погашения:</b>
-        ${payDay}
+        <!-- ПРАВАЯ ЧАСТЬ -->
+
+        <div class="result">
+
+            <div>
+                <b>Наценка:</b>
+                <span id="pdfMarkup"></span>
+            </div>
+
+            <div>
+                <b>Сумма рассрочки:</b>
+                <span id="pdfInstallment"></span>
+            </div>
+
+            <div>
+                <b>Общая сумма:</b>
+                <span id="pdfTotal"></span>
+            </div>
+
+            <div>
+                <b>Ежемесячный платёж:</b>
+                <span id="pdfMonthly"></span>
+            </div>
+
+            <div>
+                <b>Число погашения:</b>
+                <span id="pdfPaymentNumber"></span>
+            </div>
+
+        </div>
 
     </div>
-    `;
 
-    html+=`
-
-    <div class="table-wrap">
 
     <table>
 
-    <tr>
-        <th>№</th>
-        <th>Дата</th>
-        <th>Платёж</th>
-        <th>Остаток</th>
-    </tr>
-    `;
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Дата</th>
+                <th>Платёж</th>
+                <th>Остаток</th>
+            </tr>
+        </thead>
 
-    let remaining=installmentTotal;
-
-    for(let i=0;i<months;i++){
-
-        const d=paymentDate(
-            firstYear,
-            firstMonth+i,
-            payDay
-        );
-
-        const payment=
-            i===months-1
-            ?lastPayment
-            :monthly;
-
-        remaining-=payment;
-
-        html+=`
-
-        <tr>
-            <td>${i+1}</td>
-            <td>${dateText(d)}</td>
-            <td>${money(payment)}</td>
-            <td>${money(Math.max(0,remaining))}</td>
-        </tr>
-
-        `;
-    }
-
-    html+=`
+        <tbody id="paymentTable"></tbody>
 
     </table>
-    </div>
-    `;
 
-    const newWindow=window.open("","_blank");
+    <button class="pdf" onclick="window.print()">
+        Сохранить / Печать PDF
+    </button>
 
-    if(!newWindow){
-        alert(
-            "Браузер заблокировал новое окно. Разрешите всплывающие окна."
-        );
+</div>
+
+
+<script>
+
+function formatMoney(number) {
+    return Math.round(number)
+        .toLocaleString("ru-RU") + " сом";
+}
+
+
+function formatDate(date) {
+
+    let d = String(date.getDate()).padStart(2, "0");
+    let m = String(date.getMonth() + 1).padStart(2, "0");
+    let y = date.getFullYear();
+
+    return d + "." + m + "." + y;
+}
+
+
+function addMonths(date, months) {
+
+    let result = new Date(date);
+
+    result.setMonth(result.getMonth() + months);
+
+    return result;
+}
+
+
+function calculate() {
+
+    const client =
+        document.getElementById("client").value;
+
+    const product =
+        document.getElementById("product").value;
+
+    const price =
+        Number(document.getElementById("price").value);
+
+    const down =
+        Number(document.getElementById("downPayment").value);
+
+    const annualMarkup =
+        Number(document.getElementById("markup").value);
+
+    const months =
+        Number(document.getElementById("months").value);
+
+    const firstDateValue =
+        document.getElementById("firstDate").value;
+
+
+    const error =
+        document.getElementById("error");
+
+    error.innerHTML = "";
+
+
+    if (!price || price <= 0) {
+        error.innerHTML = "Введите цену товара.";
         return;
     }
 
-    newWindow.document.write(`
 
-<!DOCTYPE html>
-
-<html lang="ru">
-
-<head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width,initial-scale=1.0">
-
-<title>График Мурабаха</title>
-
-<style>
-
-*{
-    box-sizing:border-box;
-}
-
-body{
-    font-family:Arial,sans-serif;
-    background:#f4f6f8;
-    padding:20px;
-    margin:0;
-}
-
-.container{
-    max-width:750px;
-    margin:auto;
-    background:white;
-    padding:20px;
-    border-radius:14px;
-    box-shadow:0 2px 12px rgba(0,0,0,.08);
-}
-
-h2{
-    text-align:center;
-}
-
-.actions{
-    display:flex;
-    gap:10px;
-    margin-bottom:20px;
-}
-
-.actions button{
-    flex:1;
-    padding:12px;
-    border:0;
-    border-radius:8px;
-    color:white;
-    font-size:15px;
-    font-weight:bold;
-    cursor:pointer;
-}
-
-.back-button{
-    background:#555;
-}
-
-.pdf-button{
-    background:#007aff;
-}
-
-.summary{
-    background:#f4f6f8;
-    padding:14px;
-    border-radius:10px;
-    line-height:1.8;
-}
-
-.table-wrap{
-    overflow-x:auto;
-}
-
-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:15px;
-    font-size:14px;
-}
-
-th,td{
-    border:1px solid #ddd;
-    padding:8px;
-    text-align:center;
-}
-
-th{
-    background:#eee;
-}
-
-@media(max-width:600px){
-
-    body{
-        padding:10px;
+    if (down < 0 || down >= price) {
+        error.innerHTML =
+            "Первоначальный взнос должен быть меньше цены товара.";
+        return;
     }
 
-    .container{
-        padding:12px;
+
+    if (!firstDateValue) {
+        error.innerHTML =
+            "Выберите дату первой оплаты.";
+        return;
     }
 
-    .actions{
-        flex-direction:column;
+
+    /*
+       Сумма после первоначального взноса
+    */
+
+    const afterDown = price - down;
+
+
+    /*
+       Наценка считается только
+       от суммы после первоначального взноса.
+
+       Например:
+
+       Цена = 120 000
+       Взнос = 20 000
+       Остаток = 100 000
+       30% годовых
+       6 месяцев = 15%
+
+       Наценка = 15 000
+    */
+
+    const markupPercent =
+        annualMarkup * months / 12;
+
+
+    const markupAmount =
+        afterDown * markupPercent / 100;
+
+
+    const installmentAmount =
+        afterDown + markupAmount;
+
+
+    /*
+       В данном шаблоне:
+
+       "Сумма рассрочки" = сумма с наценкой
+       "Общая сумма" = первоначальный взнос
+                         + сумма рассрочки
+    */
+
+    const totalAmount =
+        down + installmentAmount;
+
+
+    const monthly =
+        installmentAmount / months;
+
+
+    /*
+       Заполняем PDF
+    */
+
+    document.getElementById("pdfClient").textContent =
+        client || "—";
+
+    document.getElementById("pdfProduct").textContent =
+        product || "—";
+
+    document.getElementById("pdfPrice").textContent =
+        formatMoney(price);
+
+    document.getElementById("pdfDown").textContent =
+        formatMoney(down);
+
+    document.getElementById("pdfAfterDown").textContent =
+        formatMoney(afterDown);
+
+    document.getElementById("pdfMonths").textContent =
+        months + " мес.";
+
+    document.getElementById("pdfMarkup").textContent =
+        markupPercent.toFixed(2) +
+        "% (" +
+        formatMoney(markupAmount) +
+        ")";
+
+    document.getElementById("pdfInstallment").textContent =
+        formatMoney(installmentAmount);
+
+    document.getElementById("pdfTotal").textContent =
+        formatMoney(totalAmount);
+
+    document.getElementById("pdfMonthly").textContent =
+        formatMoney(Math.round(monthly));
+
+    document.getElementById("pdfPaymentNumber").textContent =
+        months;
+
+
+    /*
+       Таблица платежей
+    */
+
+    const table =
+        document.getElementById("paymentTable");
+
+    table.innerHTML = "";
+
+
+    let remaining =
+        installmentAmount;
+
+
+    const firstDate =
+        new Date(firstDateValue + "T00:00:00");
+
+
+    for (let i = 1; i <= months; i++) {
+
+        let payment;
+
+        /*
+           Последний платёж корректируется,
+           чтобы остаток был ровно 0.
+        */
+
+        if (i === months) {
+            payment = remaining;
+        } else {
+            payment = Math.round(monthly);
+        }
+
+
+        remaining -= payment;
+
+        if (Math.abs(remaining) < 1) {
+            remaining = 0;
+        }
+
+
+        const paymentDate =
+            addMonths(firstDate, i - 1);
+
+
+        const row =
+            document.createElement("tr");
+
+
+        row.innerHTML = `
+
+            <td>${i}</td>
+
+            <td>
+                ${formatDate(paymentDate)}
+            </td>
+
+            <td>
+                ${formatMoney(payment)}
+            </td>
+
+            <td>
+                ${formatMoney(remaining)}
+            </td>
+
+        `;
+
+
+        table.appendChild(row);
     }
+
+
+    /*
+       Переходим к PDF-странице
+    */
+
+    document.querySelector(".calculator")
+        .style.display = "none";
+
+    document.querySelector(".pdf-page")
+        .style.display = "block";
+
+
+    /*
+       Автоматически открываем печать
+    */
+
+    setTimeout(() => {
+        window.print();
+    }, 300);
 }
 
-@media print{
 
-    .actions{
-        display:none;
-    }
+/*
+   После закрытия окна печати
+   возвращаем калькулятор
+*/
 
-    body{
-        background:white;
-        padding:0;
-    }
+window.onafterprint = function() {
 
-    .container{
-        box-shadow:none;
-        max-width:none;
-    }
-}
+    document.querySelector(".calculator")
+        .style.display = "block";
 
-</style>
+    document.querySelector(".pdf-page")
+        .style.display = "none";
 
-</head>
-
-<body>
-
-<div class="container">
-
-<h2>
-График погашения Мурабаха
-</h2>
-
-<div class="actions">
-
-<button
-class="back-button"
-onclick="window.close()">
-
-← Назад в калькулятор
-
-</button>
-
-<button
-class="pdf-button"
-onclick="window.print()">
-
-📄 Сохранить PDF
-
-</button>
-
-</div>
-
-${html}
-
-</div>
-
-</body>
-
-</html>
-
-`);
-
-newWindow.document.close();
-
-}
+};
 
 </script>
 
